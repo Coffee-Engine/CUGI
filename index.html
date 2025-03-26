@@ -20,6 +20,7 @@
             multiline:"Hello\nWorld!",
             boolean:false,
             dropdown:"1",
+            slider:"1",
         }
 
         document.body.appendChild(CUGI.createList([
@@ -34,6 +35,7 @@
             {target: CUGITest, key: "boolean", type: "boolean"},
             {target: CUGITest, key: "dropdown", type: "dropdown", items: ["hello", "hi"]},
             {type: "header", text: "HEADER!"},
+            {target: CUGITest, key: "slider", type: "slider", min:0, max:5},
         ]))
     </script>
 </body>

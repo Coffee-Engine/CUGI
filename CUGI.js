@@ -64,6 +64,42 @@
                 return input;
             },
 
+            slider: (data) => {
+                const {target, key} = data;
+
+                data.min = data.min || 0;
+                data.max = (data.max !== undefined) ? data.max : 100;
+
+                //Create our number input
+                const containerDiv = document.createElement("div");
+                containerDiv.className = "CUGI-PropertyHolder CUGI-SliderHolder";
+
+                const numberInput = CUGI.types.float(data);
+                const sliderInput = CUGI.macros.inputElement("range", {
+                    value: Number(target[key]),
+                    className: `CUGI-Slider ${data.extraStyle}`,
+                    min: data.min,
+                    max: data.max,
+                    step: data.step || 0.05,
+                });
+
+                sliderInput.onchange = CUGI.macros.onchange(data, sliderInput);
+
+                containerDiv.appendChild(numberInput);
+                containerDiv.appendChild(sliderInput);
+
+                //Link them
+                numberInput.oninput = () => {
+                    sliderInput.value = numberInput.value;
+                }
+
+                sliderInput.oninput = () => {
+                    numberInput.value = sliderInput.value;
+                }
+
+                return containerDiv;
+            },
+
             int: (data) => {
                 const { target, key } = data;
 
