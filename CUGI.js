@@ -41,6 +41,30 @@
                 text.className = "CUGI-PropertyName CUGI-Header"
 
                 return text;
+            },
+            subMenu: (data) => {
+                //Create the container
+                const container = document.createElement("div");
+                container.className = "CUGI-PropertyHolder CUGI-SubMenu";
+
+                if (!Array.isArray(data.items)) return container;
+            
+                //Add the sub CUGI
+                container.appendChild(CUGI.createList(data.items));
+
+                //Return
+                return container;
+            },
+            button: (data) => {
+                //Create the button
+                const button = document.createElement('button');
+
+                //Our button
+                if (data.onclick) button.onclick = (event) => {data.onclick(event, data)};
+                button.innerText = data.text || "No Text!";
+                button.className = "CUGI-Button";
+
+                return button;
             }
         },
 
@@ -315,7 +339,19 @@
                         const propertyHolder = document.createElement("div");
                         propertyHolder.className = "CUGI-PropertyHolder";
 
-                        propertyHolder.appendChild(CUGI.displays[item.type](item));
+                        //Add our display
+                        propertyHolder.appendChild(CUGI.displays[item.type]({
+                            //Our items
+                            ...item, 
+                            
+                            //Our selection refresher
+                            refreshSelection:() => {
+                                //Refresh it
+                                container.parentElement.insertBefore(CUGI.createList(items), container);
+                                container.parentElement.removeChild(container);
+                                container.innerHTML = "";
+                            }
+                        }));
 
                         container.appendChild(propertyHolder);
                         return;
