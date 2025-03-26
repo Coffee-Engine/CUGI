@@ -1,10 +1,9 @@
-<!--THIS IS NOT REQUIRED NEITHER IS DEFAULT.CSS! this is just a demo!-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CUGI Demo</title>
     <link rel="stylesheet" href="CUGI-Default.css">
 </head>
 <body>
@@ -12,6 +11,7 @@
     <script>
         window.CUGITest = {
             float:0,
+            float2:0,
             int:0,
             vec2:{x:0, y:0},
             vec3:{x:0, y:0, z:0},
@@ -20,7 +20,8 @@
             multiline:"Hello\nWorld!",
             boolean:false,
             dropdown:"1",
-            slider:"1",
+            slider: 1,
+            EnableBelow: true,
         }
 
         document.body.appendChild(CUGI.createList([
@@ -35,7 +36,29 @@
             {target: CUGITest, key: "boolean", type: "boolean"},
             {target: CUGITest, key: "dropdown", type: "dropdown", items: ["hello", "hi"]},
             {type: "header", text: "HEADER!"},
-            {target: CUGITest, key: "slider", type: "slider", min:0, max:5},
+            {target: CUGITest, key: "slider", type: "slider", min: 0, max: 5},
+            "---",
+            {type: "label", text: "Disabling"},
+            {target: CUGITest, key: "EnableBelow", type: "boolean", onchange: (value, { refreshSelection }) => {
+                alert("hi");
+                try {
+                    refreshSelection();
+                } catch (error) {
+                    alert(error);
+                }
+            }},
+            {target: CUGITest, key: "float2", type: "float", disabled: () => {return !CUGITest.EnableBelow}},
+            {target: CUGITest, key: "vec2", type: "vec2", disabled: () => {return !CUGITest.EnableBelow}},
+
+            {type: "subMenu", items: [
+                {target: CUGITest, key: "int", type: "int"},
+                {target: CUGITest, key: "vec2", type: "vec2"},
+                {target: CUGITest, key: "vec3", type: "vec3"},
+                {target: CUGITest, key: "vec4", type: "vec4"},
+                {type: "button", text:"Hello World!", onclick: () => {
+                    alert("Hello!");
+                }}
+            ]},
         ]))
     </script>
 </body>
