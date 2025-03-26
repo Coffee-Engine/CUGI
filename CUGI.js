@@ -21,7 +21,7 @@
                 value = value || "value";
                 return () => {
                     data.target[data.key] = (typeof passthrough == "function") ? passthrough(input[value]) : input[value];
-                    if (data.onchange) data.onchange(data.target[data.key]);
+                    if (data.onchange) data.onchange(data.target[data.key], data);
                 }
             }
         },
@@ -56,7 +56,8 @@
                     min: data.min,
                     max: data.max,
                     step: data.step,
-                    size:2
+                    size:2,
+                    disabled: (typeof data.disabled == "function") ? data.disabled() : data.disabled
                 });
 
                 input.onchange = CUGI.macros.onchange(data, input);
@@ -81,9 +82,11 @@
                     min: data.min,
                     max: data.max,
                     step: data.step || 0.05,
+                    disabled: (typeof data.disabled == "function") ? data.disabled() : data.disabled
                 });
 
                 sliderInput.onchange = CUGI.macros.onchange(data, sliderInput);
+                sliderInput.disabled = (typeof data.disabled == "function") ? data.disabled() : data.disabled;
 
                 containerDiv.appendChild(numberInput);
                 containerDiv.appendChild(sliderInput);
@@ -110,7 +113,8 @@
                     min: data.min,
                     max: data.max,
                     step: 1,
-                    size:2
+                    size:2,
+                    disabled: (typeof data.disabled == "function") ? data.disabled() : data.disabled
                 });
 
                 input.onchange = CUGI.macros.onchange(data, input, null, Math.floor);
@@ -182,7 +186,8 @@
                     minlength: Math.floor(data.min),
                     maxlength: Math.floor(data.max),
                     spellcheck: data.spellcheck,
-                    size:10
+                    size:10,
+                    disabled: (typeof data.disabled == "function") ? data.disabled() : data.disabled
                 });
 
                 input.onchange = CUGI.macros.onchange(data, input);
@@ -202,6 +207,7 @@
                 input.autocomplete = data.autocomplete || false;
                 input.autocorrect = data.autocorrect || false;
                 input.spellcheck = (typeof data.spellcheck != "undefined") ? data.spellcheck : true;
+                input.disabled = (typeof data.disabled == "function") ? data.disabled() : data.disabled;
 
                 if (data.min) input.minlength = Math.floor(data.min);
                 if (data.max) input.maxlength = Math.floor(data.max);
@@ -224,6 +230,7 @@
                 const input = CUGI.macros.inputElement("checkbox", {
                     checked: Boolean(target[key]),
                     className: "CUGI-Boolean",
+                    disabled: (typeof data.disabled == "function") ? data.disabled() : data.disabled
                 });
 
                 input.onchange = CUGI.macros.onchange(data, input, "checked");
@@ -241,7 +248,7 @@
                 //Parse out menu items
                 if (data.items) {
                     let parsedItems = data.items;
-                    if (typeof parsedItems == "function") parsedItems(data);
+                    if (typeof parsedItems == "function") parsedItems = parsedItems(data);
 
                     //Make sure we have an array
                     if (Array.isArray(parsedItems)) parsedItems.forEach(item => {
@@ -288,6 +295,16 @@
             if (Array.isArray(items)) {
                 items.forEach(item => {
                     //Make sure the item is an object
+                    if (typeof item == "string") {
+                        const propertyHolder = document.createElement("div");
+                        propertyHolder.className = "CUGI-PropertyHolder";
+
+                        propertyHolder.appendChild(CUGI.displays.label({ text:(item === "---") ? " " : item }));
+
+                        container.appendChild(propertyHolder);
+                        return;
+                    }
+
                     if (typeof item != "object") return;
 
                     //Make sure we have a type
@@ -319,7 +336,18 @@
                     label.innerText = item.text || item.key;
 
                     //Add our input
-                    const input = CUGI.types[item.type](item);
+                    const input = CUGI.types[item.type]({
+                        //Our items
+                        ...item, 
+                        
+                        //Our selection refresher
+                        refreshSelection:() => {
+                            //Refresh it
+                            container.parentElement.insertBefore(CUGI.createList(items), container);
+                            container.parentElement.removeChild(container);
+                            container.innerHTML = "";
+                        }
+                    });
 
                     propertyHolder.appendChild(label);
                     propertyHolder.appendChild(input);
