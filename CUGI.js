@@ -314,8 +314,10 @@
             }
         },
 
-        createList: (items, globalChange) => {
+        createList: (items, parameters) => {
             const container = document.createElement("div");
+
+            const {globalChange, preprocess} = parameters || {};
             
             if (Array.isArray(items)) {
                 items.forEach(item => {
@@ -334,6 +336,10 @@
 
                     //Make sure we have a type
                     if (!item.type) return;
+
+                    if (preprocess) {
+                        item = preprocess(item);
+                    }
 
                     //Displays are just static most of the time
                     if (CUGI.displays[item.type]) {
