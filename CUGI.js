@@ -60,7 +60,7 @@
                 const button = document.createElement('button');
 
                 //Our button
-                if (data.onclick) button.onclick = (event) => {data.onclick(event, data)};
+                if (data.onclick) button.onclick = (event) => {data.onclick(button, event, data)};
                 button.innerText = data.text || "No Text!";
                 button.className = "CUGI-Button";
 
@@ -266,7 +266,6 @@
                 const { target, key } = data;
 
                 const input = document.createElement("select");
-                input.value = target[key];
                 input.className = "CUGI-Dropdown";
 
                 //Parse out menu items
@@ -306,6 +305,8 @@
                         input.appendChild(option);
                     });
                 }
+                
+                input.value = target[key];
 
                 input.onchange = CUGI.macros.onchange(data, input);
 
@@ -313,7 +314,7 @@
             }
         },
 
-        createList: (items) => {
+        createList: (items, globalChange) => {
             const container = document.createElement("div");
             
             if (Array.isArray(items)) {
@@ -362,6 +363,18 @@
                     
                     //Also make sure it's type exists
                     if (!CUGI.types[item.type]) return;
+
+                    //If we have an globalChange add that
+                    if (item.onchange && globalChange) {
+                        const oldChange = item.onchange;
+                        item.onchange = (value, data) => {
+                            oldChange(value, data);
+                            globalChange(value, data);
+                        }
+                    }
+                    else if (globalChange) {
+                        item.onchange = globalChange;
+                    }
 
                     //Then assemble
                     const propertyHolder = document.createElement("div");
