@@ -285,6 +285,18 @@
 
                 return input;
             },
+            
+            color: (data) => {
+                const { target, key } = data;
+
+                const input = CUGI.macros.inputElement("color", {
+                    value: String(target[key])
+                });
+
+                input.onchange = CUGI.macros.onchange(data, input);
+
+                return input;
+            },
 
             dropdown: (data) => {
                 const { target, key } = data;
