@@ -451,6 +451,67 @@
             }
 
             return container;
-        }
+        },
+
+        createPopup: (items, parameters, x, y) => {
+            const container = CUGI.createList(items, parameters);
+            container.className = "CUGI-Popup";
+            container.style.setProperty("--x", `${x}px`);
+            container.style.setProperty("--y", `${y}px`);
+
+            document.body.appendChild(container);
+
+            return {
+                container: container,
+                close: () => {
+                    container.parentElement.removeChild(container);
+                },
+                justOpened: true
+            }
+        },
+
+        dropdownClass: class extends HTMLElement {
+            constructor() {
+                super();
+
+                //Get this ready and steaming
+                this.addEventListener("click", () => {
+                    const bounds = this.getClientRects()[0];
+                    const items = [
+                        "test",
+                        {type: "button", text: "click me", onclick: () => { console.log("Hi"); }},
+                        {type: "float", text: "guh", target: window, key: "hi"}
+                    ];
+
+                    CUGI.currentPopup = CUGI.createPopup(items, {}, bounds.left, bounds.top);
+                });
+            }
+        },
+
+        dropDownCloseExceptions: [
+            HTMLInputElement,
+            HTMLSelectElement,
+            HTMLOptionElement,
+            HTMLTextAreaElement
+        ]
     }
+
+    customElements.define("cugi-dropdown", CUGI.dropdownClass);
+
+    document.addEventListener("click", event => {
+        //Make an exception for various elements
+        console.log(event);
+        if (CUGI.dropDownCloseExceptions.includes(event.originalTarget.prototype)
+        ) return;
+
+        if (CUGI.currentPopup) {
+            if (CUGI.currentPopup.justOpened) {
+                CUGI.currentPopup.justOpened = false;
+                return;
+            }
+
+            CUGI.currentPopup.close();
+            CUGI.currentPopup = null;
+        }
+    });
 })();
