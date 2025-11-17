@@ -348,6 +348,30 @@
                 input.onchange = CUGI.macros.onchange(data, input);
 
                 return input;
+            },
+
+            date: (data) => {
+                const { target, key } = data;
+
+                const input = CUGI.macros.inputElement((data.includeTime) ? "datetime-local" : "date", {
+                    value: String(target[key])
+                });
+
+                input.onchange = CUGI.macros.onchange(data, input);
+
+                return input;
+            },
+
+            time: (data) => {
+                const { target, key } = data;
+
+                const input = CUGI.macros.inputElement("time", {
+                    value: String(target[key])
+                });
+
+                input.onchange = CUGI.macros.onchange(data, input);
+
+                return input;
             }
         },
 
@@ -477,14 +501,36 @@
                 //Get this ready and steaming
                 this.addEventListener("click", () => {
                     const bounds = this.getClientRects()[0];
-                    const items = [
-                        "test",
-                        {type: "button", text: "click me", onclick: () => { console.log("Hi"); }},
-                        {type: "float", text: "guh", target: window, key: "hi"}
-                    ];
+                    let script = "";
+                    
+                    //Loop through children to get options
+                    for (let childID in this.children) {
+                        const child = this.children[childID];
+                        if (child.nodeName == "CUGI-OPTION") {
+                            if (childID == 0) script += child.innerHTML;
+                            else script += `,${child.innerHTML}`;
+                        }
+                    }
 
-                    CUGI.currentPopup = CUGI.createPopup(items, {}, bounds.left, bounds.top);
+                    script = `[${script}]`;
+
+                    if (CUGI.currentPopup) {
+                        CUGI.currentPopup.close();
+                        CUGI.currentPopup = null;
+                    }
+
+                    CUGI.currentPopup = CUGI.createPopup(eval(script), {}, bounds.left, bounds.top);
                 });
+            }
+        },
+
+        optionClass: class extends HTMLElement {
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                this.style.visibility = "hidden";
             }
         },
 
@@ -497,11 +543,11 @@
     }
 
     customElements.define("cugi-dropdown", CUGI.dropdownClass);
+    customElements.define("cugi-option", CUGI.optionClass);
 
     document.addEventListener("click", event => {
         //Make an exception for various elements
-        console.log(event);
-        if (CUGI.dropDownCloseExceptions.includes(event.originalTarget.prototype)
+        if (CUGI.dropDownCloseExceptions.includes(event.target.constructor)
         ) return;
 
         if (CUGI.currentPopup) {

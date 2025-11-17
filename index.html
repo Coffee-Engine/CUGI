@@ -59,8 +59,15 @@
                     alert("Hello!");
                 }}
             ]},
+
+            { target: CUGITest, key: "date", type: "date" },
+            { target: CUGITest, key: "datetime", type: "date", includeTime: true },
+            { target: CUGITest, key: "time", type: "time" },
         ]))
     </script>
-    <cugi-dropdown>Hello</cugi-dropdown>
+    <cugi-dropdown>Hello
+        <cugi-option>{ type: "button", text: "hello world!" }</cugi-option>
+        <cugi-option>{ type: "float", text: "hello world!", target: window, key: "hi" }</cugi-option>
+    </cugi-dropdown>
 </body>
 </html>

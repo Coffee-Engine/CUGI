@@ -113,6 +113,9 @@ input[type="checkbox"]:checked {
 .CUGI-Popup {
     position: absolute;
 
+    top: var(--x);
+    top: var(--y);
+
     background-color: #dfdfdf;
     border-width: 2px;
     border-radius: 8px;
@@ -120,4 +123,16 @@ input[type="checkbox"]:checked {
     border-style: solid;
 
     z-index: 99999;
+
+    animation: 1.5s CUGI-Popup-Open ease-out;
+    overflow: hidden;
+}
+
+@keyframes CUGI-Popup-Open {
+    0% {
+        max-height: 0%;
+    }
+    100% {
+        max-height: 100%;
+    }
 }
