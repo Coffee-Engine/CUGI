@@ -560,4 +560,19 @@
             CUGI.currentPopup = null;
         }
     });
+
+    document.addEventListener("contextmenu", event => {
+        if (event.originalTarget.CUGI_CONTEXT) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (CUGI.currentPopup) {
+                CUGI.currentPopup.close();
+                CUGI.currentPopup = null;
+            }
+
+            CUGI.currentPopup = CUGI.createPopup(event.originalTarget.CUGI_CONTEXT(), {}, event.clientX, event.clientY);
+            CUGI.currentPopup.justOpened = false;
+        }
+    });
 })();
