@@ -507,8 +507,15 @@
                     for (let childID in this.children) {
                         const child = this.children[childID];
                         if (child.nodeName == "CUGI-OPTION") {
-                            if (childID == 0) script += child.innerHTML;
-                            else script += `,${child.innerHTML}`;
+                            //From G4G
+                            const optionData = child.innerHTML.replace(/&amp;/g, '&')
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>')
+                            .replace(/&quot;/g, '"')
+                            .replace(/&#39;/g, "'");
+
+                            if (childID == 0) script += optionData;
+                            else script += `,${optionData}`;
                         }
                     }
 
