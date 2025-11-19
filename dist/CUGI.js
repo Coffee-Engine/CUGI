@@ -538,6 +538,7 @@
 
             connectedCallback() {
                 this.style.visibility = "hidden";
+                this.style.fontSize = "0px";
             }
         },
 
